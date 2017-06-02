@@ -1,0 +1,70 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_itoa_base.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pmorrain <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/05/05 15:29:23 by pmorrain          #+#    #+#             */
+/*   Updated: 2017/05/05 16:57:14 by pmorrain         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "libft.h"
+
+static void		ft_itoa_rec(int nbr, char *str, int base)
+{
+	char	base16[17];
+
+	ft_strcpy(base16, "0123456789ABCDEF");
+	str[0] = base16[nbr % base];
+	if (nbr < 0)
+		str[0] = base16[-nbr % base];
+	str[1] = '\0';
+	if (nbr / base != 0)
+		ft_itoa_rec(nbr / base, str + 1, base);
+}
+
+static int		ft_numlen_base(unsigned int nb, int base)
+{
+	int		length;
+
+	length = 0;
+	if (nb == 0)
+		return (1);
+	while (nb / base)
+	{
+		length++;
+		nb = nb / base;
+	}
+	return (length);
+}
+
+char			*ft_itoa_base(int value, int base)
+{
+	unsigned int	nb;
+	char			*str;
+	int				length;
+
+	nb = value;
+	length = ft_numlen_base(nb, base);
+	if (value < 0)
+		length++;
+	if ((str = (char*)malloc((length + 1) * sizeof(char))) == NULL)
+		return (NULL);
+	if (value < 0 && base == 10)
+		str++;
+	if (value == -2147483648 && base == 10)
+		nb = 2147483647;
+	ft_itoa_rec(nb, str, base);
+	if ((str = ft_strrev(str)) == NULL)
+		return (NULL);
+	if (value < 0 && base == 10)
+	{
+		str--;
+		str[0] = '-';
+		if (value == -2147483648 && base == 10)
+			str[10] = '8';
+	}
+	return (str);
+}
